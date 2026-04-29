@@ -626,8 +626,19 @@ elif section == "📊 PCA Analysis":
             'Category': color_data
         })
         
-        fig = px.scatter(pca_df, x='PC1', y='PC2', color='Category', 
-                         color_continuous_scale='coolwarm', opacity=0.6)
+        scatter_kwargs = {
+            'data_frame': pca_df,
+            'x': 'PC1',
+            'y': 'PC2',
+            'color': 'Category',
+            'opacity': 0.6
+        }
+        if pd.api.types.is_numeric_dtype(pca_df['Category']):
+            scatter_kwargs['color_continuous_scale'] = 'viridis'
+        else:
+            scatter_kwargs['color_discrete_sequence'] = px.colors.qualitative.Plotly
+
+        fig = px.scatter(**scatter_kwargs)
         fig.update_layout(
             xaxis_title=f"PC1 ({pca.explained_variance_ratio_[0]*100:.2f}%)",
             yaxis_title=f"PC2 ({pca.explained_variance_ratio_[1]*100:.2f}%)",
